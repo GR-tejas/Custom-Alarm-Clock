@@ -8,8 +8,10 @@ public class AudioScript : MonoBehaviour
     public bool isPlaying = false;
     public bool alarmActive = false;
 
-    public AudioSource audioSource;
+    public AudioSource voiceSource;
     public AudioClip[] soundClips;
+    public AudioSource musicSource;
+    public AudioClip musicClip;
 
     public AudioClip wakeUp;
     public AudioClip itIs;
@@ -41,6 +43,7 @@ public class AudioScript : MonoBehaviour
 
         wakeUp = Resources.Load<AudioClip>("AlarmSounds/Sentence/WakeUp");
         itIs = Resources.Load<AudioClip>("AlarmSounds/Sentence/ItIs");
+        musicClip = Resources.Load<AudioClip>("AlarmSounds/Music/Morning Alarm");
     }
 
     void Start()
@@ -58,6 +61,12 @@ public class AudioScript : MonoBehaviour
     {
         isPlaying = true;
         if (alarmCoroutine != null) StopCoroutine(alarmCoroutine);
+        if (musicSource != null && musicClip != null)
+        {
+            musicSource.clip = musicClip;
+            musicSource.loop = true;
+            musicSource.Play();
+        }
         alarmCoroutine = StartCoroutine(PlayAlarmAudio());
     }
 
@@ -69,37 +78,40 @@ public class AudioScript : MonoBehaviour
             alarmCoroutine = null;
         }
         isPlaying = false;
+
+        if (musicSource != null)
+            musicSource.Stop();
     }
 
     public IEnumerator PlayAlarmAudio()
     {
         while (true)
         {
-            audioSource.clip = wakeUp;
-            audioSource.Play();
-            yield return new WaitForSeconds(audioSource.clip.length);
+            voiceSource.clip = wakeUp;
+            voiceSource.Play();
+            yield return new WaitForSeconds(voiceSource.clip.length);
 
-            audioSource.clip = itIs;
-            audioSource.Play();
-            yield return new WaitForSeconds(audioSource.clip.length);
+            voiceSource.clip = itIs;
+            voiceSource.Play();
+            yield return new WaitForSeconds(voiceSource.clip.length);
 
-            audioSource.clip = soundClips[TimeScript.instance.nowHour];
-            audioSource.Play();
-            yield return new WaitForSeconds(audioSource.clip.length);
+            voiceSource.clip = soundClips[TimeScript.instance.nowHour];
+            voiceSource.Play();
+            yield return new WaitForSeconds(voiceSource.clip.length);
 
             // Play minute
             if (TimeScript.instance.minutes != 0)
             {
-                audioSource.clip = soundClips[TimeScript.instance.nowMinute];
-                audioSource.Play();
-                yield return new WaitForSeconds(audioSource.clip.length);
+                voiceSource.clip = soundClips[TimeScript.instance.nowMinute];
+                voiceSource.Play();
+                yield return new WaitForSeconds(voiceSource.clip.length);
             }
 
             // Play AM/PM
             int ampmIndex = TimeScript.instance.PM ? 60 : 0;
-            audioSource.clip = soundClips[ampmIndex];
-            audioSource.Play();
-            yield return new WaitForSeconds(audioSource.clip.length);
+            voiceSource.clip = soundClips[ampmIndex];
+            voiceSource.Play();
+            yield return new WaitForSeconds(voiceSource.clip.length);
 
             yield return new WaitForSeconds(3);
         }
