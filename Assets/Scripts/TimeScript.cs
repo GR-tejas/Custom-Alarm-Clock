@@ -18,6 +18,8 @@ public class TimeScript : MonoBehaviour
     public int nowSecond;
     public bool nowPM;
 
+    public bool testTime;
+
     public TextMeshProUGUI timeText;
     public TMP_InputField timeInput;
     public TextMeshProUGUI[] buttonTexts;
@@ -60,9 +62,9 @@ public class TimeScript : MonoBehaviour
         nowSecond = now.Second;
         nowPM = now.Hour >= 12;
 
-        if (AlarmActive)
+        if (AlarmActive || testTime)
         {
-            if(nowHour == hours && nowMinute == minutes && nowSecond == seconds)
+            if((nowHour == hours && nowMinute == minutes && nowSecond == seconds) || testTime)
             {
                 if (!AudioScript.instance.isPlaying)
                     alarmActiveWindow.SetActive(true);
@@ -147,7 +149,29 @@ public class TimeScript : MonoBehaviour
         timeInput.gameObject.SetActive(false);
         editingIndex = -1;
     }
-    
+
+    public void OnTimeInputChanged(string input)
+    {
+        int value = 0;
+        if (int.TryParse(input, out value))
+        {
+            if(editingIndex == 2)
+            {
+                if (value > 12)
+                    timeInput.text = "59";
+                else if (value < 1)
+                    timeInput.text = "01";
+            }
+            else
+            {
+                if (value > 59)
+                    timeInput.text = "59";
+                else if (value < 0)
+                    timeInput.text = "00";
+            }
+        }
+    }
+
     public void OnStopAlarmClicked()
     {
         AudioScript.instance.alarmActive = false;

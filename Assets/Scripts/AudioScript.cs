@@ -100,7 +100,7 @@ public class AudioScript : MonoBehaviour
             yield return new WaitForSeconds(voiceSource.clip.length);
 
             // Play minute
-            if (TimeScript.instance.minutes != 0)
+            if (TimeScript.instance.nowMinute != 0)
             {
                 voiceSource.clip = soundClips[TimeScript.instance.nowMinute];
                 voiceSource.Play();
@@ -108,7 +108,7 @@ public class AudioScript : MonoBehaviour
             }
 
             // Play AM/PM
-            int ampmIndex = TimeScript.instance.PM ? 60 : 0;
+            int ampmIndex = TimeScript.instance.nowPM ? 60 : 0;
             voiceSource.clip = soundClips[ampmIndex];
             voiceSource.Play();
             yield return new WaitForSeconds(voiceSource.clip.length);
